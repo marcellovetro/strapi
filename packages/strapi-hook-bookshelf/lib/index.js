@@ -486,8 +486,8 @@ module.exports = function(strapi) {
                               .map(attribute => `\`${attribute}\``)
                               .join(',');
 
-                            // Create fulltext indexes for every column.
-                            await ORM.knex.raw(`CREATE FULLTEXT INDEX SEARCH_${_.toUpper(_.snakeCase(table))} ON \`${table}\` (${columns})`);
+                            // If there are text columns, create fulltext indexes for every column.
+                            if (columns) await ORM.knex.raw(`CREATE FULLTEXT INDEX SEARCH_${_.toUpper(_.snakeCase(table))} ON \`${table}\` (${columns})`);
                             break;
                         }
                       } catch (e) {
