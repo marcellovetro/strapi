@@ -11,6 +11,7 @@ import { get } from 'lodash';
 // Components.
 import SelectOne from 'components/SelectOne';
 import SelectMany from 'components/SelectMany';
+import auth from 'utils/auth';
 
 import styles from './styles.scss';
 
@@ -21,9 +22,21 @@ function EditRelations(props) {
         const relation = get(props.schema, ['relations', relationName], {});
 
         if(['oneWay', 'oneToOne', 'manyToOne', 'oneToManyMorph', 'oneToOneMorph'].includes(relation.nature)) {
+
+          // If there is a relation with users in creation apply the default user
+          if (relation.alias === 'user' && props.isCreating && typeof props.record.user === 'undefined')
+            props.changeData({
+              target: {
+                name: 'record.user',
+                value: auth.getUserInfo()
+              }
+            });
+
           return (
             <SelectOne
               currentModelName={props.currentModelName}
+              addRelatedElement={props.addRelatedElement}
+              isCreating={props.isCreating}
               key={relationName}
               record={props.record}
               relation={relation}

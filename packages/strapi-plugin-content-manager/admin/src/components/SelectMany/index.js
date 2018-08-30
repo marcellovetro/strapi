@@ -13,6 +13,7 @@ import { cloneDeep, isArray, isNull, isUndefined, get, findIndex, isEmpty } from
 // Utils.
 import request from 'utils/request';
 import templateObject from 'utils/templateObject';
+import Button from "strapi-helper-plugin/lib/src/components/Button/index";
 
 // CSS.
 import 'react-select/dist/react-select.css';
@@ -151,6 +152,14 @@ class SelectMany extends React.PureComponent {
     });
   }
 
+  getCount = () => {
+    return this.props.record.hasOwnProperty(this.props.relation.alias) ? (
+      this.props.record[this.props.relation.alias].length
+    ) : (
+      0
+    );
+  }
+
   render() {
     const description = this.props.relation.description ? (
       <p>{this.props.relation.description}</p>
@@ -159,11 +168,24 @@ class SelectMany extends React.PureComponent {
     );
     const value = get(this.props.record, this.props.relation.alias) || [];
 
+    //MV: Add Counter and button create
+    const count = this.getCount();
+    const attrSchema =  this.props.schema.attributes[this.props.relation.alias];
+    console.log('this.props',this.props);
+    console.log('attrSchema',attrSchema);
+    const buttonCreate = this.props.isCreating || ! (attrSchema.hasOwnProperty('createButton') && attrSchema.createButton) ? '' : (
+      <Button
+        kind='primaryAddShape'
+        label={`Add ${this.props.relation.alias.toLowerCase()}`}
+        onClick={() => this.props.addRelatedElement(this.props.relation)}
+      />
+    );
+
     /* eslint-disable jsx-a11y/label-has-for */
     return (
       <div className={`form-group ${styles.selectMany} ${value.length > 4 && styles.selectManyUpdate}`}>
         <label htmlFor={this.props.relation.alias}>{this.props.relation.alias} <span>({value.length})</span></label>
-        {description}
+        {description} ({count})
         <Select
           className={`${styles.select}`}
           id={this.props.relation.alias}
@@ -199,6 +221,7 @@ class SelectMany extends React.PureComponent {
           distance={1}
           onClick={this.handleClick}
         />
+        {buttonCreate}
       </div>
     );
     /* eslint-disable jsx-a11y/label-has-for */

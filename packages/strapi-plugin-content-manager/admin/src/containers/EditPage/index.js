@@ -305,6 +305,31 @@ export class EditPage extends React.Component {
     }, {})
   )
 
+  addRelatedElement = (relation) => {
+
+    const target = {
+      name: `record.${relation.via}`,
+      value: (relation.nature == 'oneToMany' ? this.props.editPage.record: [this.props.editPage.record]),
+      type: 'select'
+    };
+
+    this.props.match.params = {
+      slug: relation.collection,
+      id: 'create'
+    };
+
+    this.props.resetProps();
+    this.componentDidMount();
+    const url = `/plugins/content-manager/${relation.collection}`;
+    this.props.history.replace({
+      pathname:`${url}/create`,
+      search: `?redirectUrl=${url}?source=content-manager`
+    });
+
+    console.log("relation", relation);
+    this.props.changeData({ target });
+  };
+
   pluginHeaderActions =  () => (
     [
       {
@@ -418,6 +443,8 @@ export class EditPage extends React.Component {
                   <div className={styles.sub_wrapper}>
                     {this.hasDisplayedRelations() && (
                       <EditRelations
+                        addRelatedElement={this.addRelatedElement}
+                        isCreating={this.isCreating()}
                         changeData={this.props.changeData}
                         currentModelName={this.getModelName()}
                         displayedRelations={this.getDisplayedRelations()}
