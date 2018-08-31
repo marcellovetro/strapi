@@ -461,6 +461,11 @@ module.exports = function(strapi) {
                         const connection = strapi.config.connections[definition.connection];
                         let columns = Object.keys(attributes).filter(attribute => ['string', 'text'].includes(attributes[attribute].type));
 
+                        if (!columns) { 
+                            // No text columns founds, exit from creating Fulltext Index 
+                            return;
+                        }
+
                         switch (connection.settings.client) {
                           case 'pg': {
                             // Enable extension to allow GIN indexes.
@@ -486,8 +491,8 @@ module.exports = function(strapi) {
                               .map(attribute => `\`${attribute}\``)
                               .join(',');
 
-                            // If there are text columns, create fulltext indexes for every column.
-                            if (columns) await ORM.knex.raw(`CREATE FULLTEXT INDEX SEARCH_${_.toUpper(_.snakeCase(table))} ON \`${table}\` (${columns})`);
+                            // Create fulltext indexes for every column.
+                            await ORM.knex.raw(`CREATE FULLTEXT INDEX SEARCH_${_.toUpper(_.snakeCase(table))} ON \`${table}\` (${columns})`);
                             break;
                         }
                       } catch (e) {
