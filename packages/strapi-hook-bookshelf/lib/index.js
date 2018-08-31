@@ -461,36 +461,39 @@ module.exports = function(strapi) {
                         const connection = strapi.config.connections[definition.connection];
                         let columns = Object.keys(attributes).filter(attribute => ['string', 'text'].includes(attributes[attribute].type));
 
-                        if (columns) {
-                          switch (connection.settings.client) {
-                            case 'pg': {
-                              // Enable extension to allow GIN indexes.
-                              await ORM.knex.raw('CREATE EXTENSION IF NOT EXISTS pg_trgm');
+                        if (!columns) { 
+                            // No text columns founds, exit from creating Fulltext Index 
+                            return;
+                        }
 
-                              // Create GIN indexes for every column.
-                              const indexes = columns
-                                .map(column => {
-                                  const indexName = `${_.snakeCase(table)}_${column}`;
-                                  const attribute = _.toLower(column) === column
-                                    ? column
-                                    : `"${column}"`;
+                        switch (connection.settings.client) {
+                          case 'pg': {
+                            // Enable extension to allow GIN indexes.
+                            await ORM.knex.raw('CREATE EXTENSION IF NOT EXISTS pg_trgm');
 
-                                  return ORM.knex.raw(`CREATE INDEX search_${_.toLower(indexName)} ON "${table}" USING gin(${attribute} gin_trgm_ops)`);
-                                });
+                            // Create GIN indexes for every column.
+                            const indexes = columns
+                              .map(column => {
+                                const indexName = `${_.snakeCase(table)}_${column}`;
+                                const attribute = _.toLower(column) === column
+                                  ? column
+                                  : `"${column}"`;
 
-                              await Promise.all(indexes);
-                              break;
-                            }
+                                return ORM.knex.raw(`CREATE INDEX search_${_.toLower(indexName)} ON "${table}" USING gin(${attribute} gin_trgm_ops)`);
+                              });
 
-                            default:
-                              columns = columns
-                                .map(attribute => `\`${attribute}\``)
-                                .join(',');
-
-                              // Create fulltext indexes for every column.
-                              await ORM.knex.raw(`CREATE FULLTEXT INDEX SEARCH_${_.toUpper(_.snakeCase(table))} ON \`${table}\` (${columns})`);
-                              break;
+                            await Promise.all(indexes);
+                            break;
                           }
+
+                          default:
+                            columns = columns
+                              .map(attribute => `\`${attribute}\``)
+                              .join(',');
+
+                            // Create fulltext indexes for every column.
+                            await ORM.knex.raw(`CREATE FULLTEXT INDEX SEARCH_${_.toUpper(_.snakeCase(table))} ON \`${table}\` (${columns})`);
+                            break;
                         }
                       } catch (e) {
                         // Handle duplicate errors.
