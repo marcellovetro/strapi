@@ -152,14 +152,6 @@ class SelectMany extends React.PureComponent {
     });
   }
 
-  getCount = () => {
-    return this.props.record.hasOwnProperty(this.props.relation.alias) ? (
-      this.props.record[this.props.relation.alias].length
-    ) : (
-      0
-    );
-  }
-
   render() {
     const description = this.props.relation.description ? (
       <p>{this.props.relation.description}</p>
@@ -185,7 +177,7 @@ class SelectMany extends React.PureComponent {
     return (
       <div className={`form-group ${styles.selectMany} ${value.length > 4 && styles.selectManyUpdate}`}>
         <label htmlFor={this.props.relation.alias}>{this.props.relation.alias} <span>({value.length})</span></label>
-        {description} ({count})
+        {description}
         <Select
           className={`${styles.select}`}
           id={this.props.relation.alias}
