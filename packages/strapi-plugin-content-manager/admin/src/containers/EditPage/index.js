@@ -327,7 +327,9 @@ export class EditPage extends React.Component {
     });
 
     console.log("relation", relation);
+    console.log("target", target);
     this.props.changeData({ target });
+
   };
 
   pluginHeaderActions =  () => (

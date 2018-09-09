@@ -161,7 +161,6 @@ class SelectMany extends React.PureComponent {
     const value = get(this.props.record, this.props.relation.alias) || [];
 
     //MV: Add Counter and button create
-    const count = this.getCount();
     const attrSchema =  this.props.schema.attributes[this.props.relation.alias];
     console.log('this.props',this.props);
     console.log('attrSchema',attrSchema);

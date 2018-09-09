@@ -51,6 +51,8 @@ function EditRelations(props) {
         return (
           <SelectMany
             currentModelName={props.currentModelName}
+            addRelatedElement={props.addRelatedElement}
+            isCreating={props.isCreating}
             key={relationName}
             isDraggingSibling={props.isDraggingSibling}
             location={props.location}
