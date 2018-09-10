@@ -305,6 +305,7 @@ export class EditPage extends React.Component {
     }, {})
   )
 
+  // After Clicling on a Create Button it jump to the Related
   addRelatedElement = (relation) => {
 
     const target = {
@@ -328,6 +329,7 @@ export class EditPage extends React.Component {
 
     console.log("relation", relation);
     console.log("target", target);
+    console.log("this.props", this.props);
     this.props.changeData({ target });
 
   };
