@@ -172,7 +172,7 @@ class SelectMany extends React.PureComponent {
     const attrSchema =  this.props.schema.attributes[this.props.relation.alias];
     console.log('this.props',this.props);
     console.log('attrSchema',attrSchema);
-    const createLink = (this.props.isCreating || ! (attrSchema.hasOwnProperty('createButton') && attrSchema.createButton)?
+    const createLink = (this.props.isCreating || ! (attrSchema.hasOwnProperty('createRelated') && attrSchema.createRelated)?
         '' :
         (
           <FormattedMessage id='content-manager.containers.Edit.clickToAddNewRelatedContent'>
@@ -183,6 +183,20 @@ class SelectMany extends React.PureComponent {
         )
     );
 
+    //Hide Select if is configured the createRelated option
+    const AddDropDown = ((attrSchema.hasOwnProperty('hideSelect') && attrSchema.hideSelect)) ? '' : (
+      <Select
+        className={`${styles.select}`}
+        id={this.props.relation.alias}
+        isLoading={this.state.isLoading}
+        onChange={this.handleChange}
+        onInputChange={this.handleInputChange}
+        onMenuScrollToBottom={this.handleBottomScroll}
+        options={this.state.options}
+        placeholder={<FormattedMessage id='content-manager.containers.Edit.addAnItem' />}
+      />
+    );
+
     /* eslint-disable jsx-a11y/label-has-for */
     return (
       <div className={`form-group ${styles.selectMany} ${value.length > 4 && styles.selectManyUpdate}`}>
@@ -191,16 +205,7 @@ class SelectMany extends React.PureComponent {
         {createLink}
         </nav>
         {description}
-        <Select
-          className={`${styles.select}`}
-          id={this.props.relation.alias}
-          isLoading={this.state.isLoading}
-          onChange={this.handleChange}
-          onInputChange={this.handleInputChange}
-          onMenuScrollToBottom={this.handleBottomScroll}
-          options={this.state.options}    
-          placeholder={<FormattedMessage id='content-manager.containers.Edit.addAnItem' />}
-        />
+        {AddDropDown}
         <SortableList
           items={
             isNull(value) || isUndefined(value) || value.size === 0

@@ -12,7 +12,7 @@
   "containers.Edit.addAnItem": "Add an item...",
   "containers.Edit.clickToJump": "Click to jump to the entry",
   "containers.Edit.clickToAddNewRelatedContent": "Click to add new related content",
-  "containers.Edit.addContent": "Add New Content",
+  "containers.Edit.addContent": "Add New",
   "containers.Edit.seeDetails": "Details",
   "containers.List.addAnEntry": "Add New {entity}",
   "containers.List.pluginHeaderDescription": "{label} entries found",

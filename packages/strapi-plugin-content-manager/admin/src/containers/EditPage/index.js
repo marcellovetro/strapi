@@ -353,7 +353,7 @@ export class EditPage extends React.Component {
     const url = `/plugins/content-manager/${relation.collection}`;
     this.props.history.push({
       pathname: `${url}/create`,
-      search: `?redirectUrl=${url}?source=content-manager`
+      search: `?relId=${this.props.editPage.record.id}&redirectUrl=${url}?source=content-manager`
     });
 
 
