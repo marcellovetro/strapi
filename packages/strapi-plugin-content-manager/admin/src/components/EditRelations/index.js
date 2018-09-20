@@ -15,12 +15,25 @@ import SelectMany from 'components/SelectMany';
 import styles from './styles.scss';
 
 function EditRelations(props) {
+  console.log("EDITRELATION PROPS, ", props);
+
   return (
     <div className={styles.editFormRelations}>
       {props.displayedRelations.map(relationName => {
         const relation = get(props.schema, ['relations', relationName], {});
 
+
         if(['oneWay', 'oneToOne', 'manyToOne', 'oneToManyMorph', 'oneToOneMorph'].includes(relation.nature)) {
+          const target = {
+            name: `record.${relation.alias}`,
+            value: props.location.relData,
+            type: 'select'
+          };
+
+          if(typeof target.value !== "undefined" && props.location.relTarget === relation.alias) {
+            props.changeData({ target });
+          }
+
           return (
             <SelectOne
               currentModelName={props.currentModelName}
@@ -33,11 +46,21 @@ function EditRelations(props) {
               location={props.location}
               onRedirect={props.onRedirect}
               addRelatedElement={props.addRelatedElement}
-
             />
           );
-        } 
-        
+
+        }
+
+        const target = {
+          name: `record.${relation.alias}`,
+          value: props.location.relData,
+          type: 'select'
+        };
+
+        if(typeof target.value !== "undefined" && props.location.relTarget === relation.alias) {
+          props.changeData({ target });
+        }
+
         return (
           <SelectMany
             currentModelName={props.currentModelName}
@@ -56,6 +79,7 @@ function EditRelations(props) {
             schema={props.schema}
           />
         );
+
       })}
     </div>
   );
