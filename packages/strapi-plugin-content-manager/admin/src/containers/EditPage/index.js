@@ -348,21 +348,22 @@ export class EditPage extends React.Component {
       id: 'create'
     };
 
+    console.log("PROPS HISTORY", this.props.location.pathname);
+
     this.props.resetProps();
     this.componentDidMount();
     const url = `/plugins/content-manager/${relation.collection}`;
     this.props.history.push({
       pathname: `${url}/create`,
-      search: `?redirectUrl=${url}?source=content-manager`,
+      search: `?redirectUrl=${this.props.location.pathname}?source=content-manager`,//${url}?source=content-manager`,
       relTarget: relation.via,
       relData: target.value
     });
 
-/*TODO: this code doesn't work anymore
     console.log("relation", relation);
     console.log("target", target);
     console.log("this.props", this.props);
-    this.props.changeData({ target });*/
+    this.props.changeData({ target });
 
   };
 
