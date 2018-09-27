@@ -43,13 +43,13 @@
 }
 
 .sortableList {
-  overflow: hidden;
+  overflow: auto;
   max-height: 116px;
   margin-bottom: -9px;
 
   > ul {
-    margin: 4px -20px 0;
-    padding: 0 20px !important;
+    margin: 4px 0;
+    padding: 0 !important;
     list-style: none !important;
     overflow: auto;
     max-height: 110px;
