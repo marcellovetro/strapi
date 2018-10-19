@@ -197,6 +197,35 @@ class SelectMany extends React.PureComponent {
       />
     );
 
+    const AddSortableList = ((attrSchema.hasOwnProperty('hideRelated') && attrSchema.hideRelated)) ? '' : (
+      <SortableList
+    items={
+      isNull(value) || isUndefined(value) || value.size === 0
+      ? null
+      : value.map(item => {
+
+        if (item) {
+          return {
+            value: get(item, 'value') || item,
+            label:
+            get(item, 'label') ||
+            templateObject({ mainField: this.props.relation.displayedAttribute }, item)
+              .mainField ||
+            item.id,
+          };
+        }
+      })
+  }
+    isDraggingSibling={this.props.isDraggingSibling}
+    keys={this.props.relation.alias}
+    moveAttr={this.props.moveAttr}
+    moveAttrEnd={this.props.moveAttrEnd}
+    onRemove={this.handleRemove}
+    distance={1}
+    onClick={this.handleClick}
+    />
+    )
+
     /* eslint-disable jsx-a11y/label-has-for */
     return (
       <div className={`form-group ${styles.selectMany} ${value.length > 4 && styles.selectManyUpdate}`}>
@@ -206,32 +235,7 @@ class SelectMany extends React.PureComponent {
         </nav>
         {description}
         {AddDropDown}
-        <SortableList
-          items={
-            isNull(value) || isUndefined(value) || value.size === 0
-              ? null
-              : value.map(item => {
-
-                if (item) {
-                  return {
-                    value: get(item, 'value') || item,
-                    label:
-                        get(item, 'label') ||
-                        templateObject({ mainField: this.props.relation.displayedAttribute }, item)
-                          .mainField ||
-                        item.id,
-                  };
-                }
-              })
-          }
-          isDraggingSibling={this.props.isDraggingSibling}
-          keys={this.props.relation.alias}
-          moveAttr={this.props.moveAttr}
-          moveAttrEnd={this.props.moveAttrEnd}
-          onRemove={this.handleRemove}
-          distance={1}
-          onClick={this.handleClick}
-        />
+        {AddSortableList}
       </div>
     );
     /* eslint-disable jsx-a11y/label-has-for */
