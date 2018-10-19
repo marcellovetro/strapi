@@ -8,7 +8,7 @@ import React from 'react';
 import Select from 'react-select';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { cloneDeep, isArray, isNull, isUndefined, get, findIndex, isEmpty } from 'lodash';
+import { cloneDeep, includes, isArray, isNull, isUndefined, get, findIndex, isEmpty } from 'lodash';
 
 // Utils.
 import request from 'utils/request';
@@ -46,6 +46,15 @@ class SelectMany extends React.PureComponent {
 
     if (prevState.toSkip !== this.state.toSkip) {
       this.getOptions('');
+    }
+  }
+
+  handleInputChange = (value) => {
+    const clonedOptions = this.state.options;
+    const filteredValues = clonedOptions.filter(data => includes(data.label, value));
+
+    if (filteredValues.length === 0) {
+      return this.getOptions(value);
     }
   }
 
@@ -159,46 +168,74 @@ class SelectMany extends React.PureComponent {
     );
     const value = get(this.props.record, this.props.relation.alias) || [];
 
+    //Create Button create template and check configuration
+    const attrSchema =  this.props.schema.attributes[this.props.relation.alias];
+    console.log('this.props',this.props);
+    console.log('attrSchema',attrSchema);
+    const createLink = (this.props.isCreating || ! (attrSchema.hasOwnProperty('createRelated') && attrSchema.createRelated)?
+        '' :
+        (
+          <FormattedMessage id='content-manager.containers.Edit.clickToAddNewRelatedContent'>
+            {title => (
+              <a onClick={() => this.props.addRelatedElement(this.props.relation)} title={title}><FormattedMessage id='content-manager.containers.Edit.addContent' /></a>
+            )}
+          </FormattedMessage>
+        )
+    );
+
+    //Hide Select if is configured the createRelated option
+    const AddDropDown = ((attrSchema.hasOwnProperty('hideSelect') && attrSchema.hideSelect)) ? '' : (
+      <Select
+        className={`${styles.select}`}
+        id={this.props.relation.alias}
+        isLoading={this.state.isLoading}
+        onChange={this.handleChange}
+        onInputChange={this.handleInputChange}
+        onMenuScrollToBottom={this.handleBottomScroll}
+        options={this.state.options}
+        placeholder={<FormattedMessage id='content-manager.containers.Edit.addAnItem' />}
+      />
+    );
+
+    const AddSortableList = ((attrSchema.hasOwnProperty('hideRelated') && attrSchema.hideRelated)) ? '' : (
+      <SortableList
+    items={
+      isNull(value) || isUndefined(value) || value.size === 0
+      ? null
+      : value.map(item => {
+
+        if (item) {
+          return {
+            value: get(item, 'value') || item,
+            label:
+            get(item, 'label') ||
+            templateObject({ mainField: this.props.relation.displayedAttribute }, item)
+              .mainField ||
+            item.id,
+          };
+        }
+      })
+  }
+    isDraggingSibling={this.props.isDraggingSibling}
+    keys={this.props.relation.alias}
+    moveAttr={this.props.moveAttr}
+    moveAttrEnd={this.props.moveAttrEnd}
+    onRemove={this.handleRemove}
+    distance={1}
+    onClick={this.handleClick}
+    />
+    )
+
     /* eslint-disable jsx-a11y/label-has-for */
     return (
       <div className={`form-group ${styles.selectMany} ${value.length > 4 && styles.selectManyUpdate}`}>
+        <nav className={styles.headline}>
         <label htmlFor={this.props.relation.alias}>{this.props.relation.alias} <span>({value.length})</span></label>
+        {createLink}
+        </nav>
         {description}
-        <Select
-          className={`${styles.select}`}
-          id={this.props.relation.alias}
-          isLoading={this.state.isLoading}
-          onChange={this.handleChange}
-          onMenuScrollToBottom={this.handleBottomScroll}
-          options={this.state.options}    
-          placeholder={<FormattedMessage id='content-manager.containers.Edit.addAnItem' />}
-        />
-        <SortableList
-          items={
-            isNull(value) || isUndefined(value) || value.size === 0
-              ? null
-              : value.map(item => {
-
-                if (item) {
-                  return {
-                    value: get(item, 'value') || item,
-                    label:
-                        get(item, 'label') ||
-                        templateObject({ mainField: this.props.relation.displayedAttribute }, item)
-                          .mainField ||
-                        item.id,
-                  };
-                }
-              })
-          }
-          isDraggingSibling={this.props.isDraggingSibling}
-          keys={this.props.relation.alias}
-          moveAttr={this.props.moveAttr}
-          moveAttrEnd={this.props.moveAttrEnd}
-          onRemove={this.handleRemove}
-          distance={1}
-          onClick={this.handleClick}
-        />
+        {AddDropDown}
+        {AddSortableList}
       </div>
     );
     /* eslint-disable jsx-a11y/label-has-for */

@@ -334,6 +334,39 @@ export class EditPage extends React.Component {
 
   toggle = () => this.setState(prevState => ({ showWarning: !prevState.showWarning }));
 
+  // After Clicling on a Create Button it jump to the Related
+  addRelatedElement = (relation) => {
+
+    const target = {
+      name: `record.${relation.via}`,
+      value: (relation.nature == 'oneToMany' ? this.props.editPage.record: [this.props.editPage.record]),
+      type: 'select'
+    };
+
+    this.props.match.params = {
+      slug: relation.collection,
+      id: 'create'
+    };
+
+    console.log("PROPS HISTORY", this.props.location.pathname);
+
+    this.props.resetProps();
+    this.componentDidMount();
+    const url = `/plugins/content-manager/${relation.collection}`;
+    this.props.history.push({
+      pathname: `${url}/create`,
+      search: `?redirectUrl=${this.props.location.pathname}?source=content-manager`,//${url}?source=content-manager`,
+      relTarget: relation.via,
+      relData: target.value
+    });
+
+    console.log("relation", relation);
+    console.log("target", target);
+    console.log("this.props", this.props);
+    this.props.changeData({ target });
+
+  };
+
   renderEdit = () => {
     const { editPage, location: { search } } = this.props;
     const source = getQueryParameters(search, 'source');
@@ -418,6 +451,8 @@ export class EditPage extends React.Component {
                   <div className={styles.sub_wrapper}>
                     {this.hasDisplayedRelations() && (
                       <EditRelations
+                        addRelatedElement={this.addRelatedElement}
+                        isCreating={this.isCreating()}
                         changeData={this.props.changeData}
                         currentModelName={this.getModelName()}
                         displayedRelations={this.getDisplayedRelations()}
