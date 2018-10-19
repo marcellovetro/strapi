@@ -33,6 +33,8 @@
   "containers.Edit.editing": "Editing...",
   "containers.Edit.reset": "Reset",
   "containers.Edit.returnList": "Return to list",
+  "containers.Edit.addContent": "Add new",
+  "containers.Edit.clickToAddNewRelatedContent": "Click to add new related content",
   "containers.Edit.seeDetails": "Details",
   "containers.Edit.submit": "Save",
   "containers.Home.introduction": "To edit your entries go to the specific link in the left menu. This plugin doesn't have a proper way to edit settings and it's still under active development.",
